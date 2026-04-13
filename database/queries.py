@@ -21,6 +21,10 @@ class MessageQueries:
             role: Роль (user/assistant)
             content: Содержимое сообщения
         """
+        if not config.USE_DATABASE:
+            logger.debug("База данных отключена, сообщение не сохранено")
+            return
+
         try:
             conn = Database.get_connection()
             cursor = conn.cursor()
@@ -36,7 +40,7 @@ class MessageQueries:
 
         except Exception as e:
             logger.error(f"Ошибка сохранения сообщения: {e}")
-            raise
+            # Не бросаем исключение, просто логируем
 
     @staticmethod
     async def get_user_history(user_id: int, limit: int = None) -> List[Dict[str, str]]:
@@ -50,6 +54,10 @@ class MessageQueries:
         Returns:
             List[Dict]: История сообщений
         """
+        if not config.USE_DATABASE:
+            logger.debug("База данных отключена, история пуста")
+            return []
+
         try:
             conn = Database.get_connection()
             cursor = conn.cursor(dictionary=True)

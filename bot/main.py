@@ -17,9 +17,12 @@ async def main():
     """Главная функция запуска бота"""
     logger.info("Запуск бота...")
 
-    # Инициализация БД
-    await init_db()
-    logger.info("База данных инициализирована")
+    # Инициализация БД (опционально)
+    if config.USE_DATABASE:
+        await init_db()
+        logger.info("База данных инициализирована")
+    else:
+        logger.info("База данных отключена (USE_DATABASE=false)")
 
     # Инициализация векторного хранилища
     vector_store = VectorStore()

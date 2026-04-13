@@ -15,8 +15,9 @@ class Config:
     OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
 
-    # Database
+    # Database (optional)
     MYSQL_URL: str = os.getenv("MYSQL_URL", "")
+    USE_DATABASE: bool = os.getenv("USE_DATABASE", "false").lower() == "true"
 
     # RAG
     MAX_HISTORY: int = int(os.getenv("MAX_HISTORY", "20"))
@@ -35,8 +36,9 @@ class Config:
             raise ValueError("BOT_TOKEN не установлен")
         if not self.OPENAI_API_KEY:
             raise ValueError("OPENAI_API_KEY не установлен")
-        if not self.MYSQL_URL:
-            raise ValueError("MYSQL_URL не установлен")
+        # MySQL опционален
+        if self.USE_DATABASE and not self.MYSQL_URL:
+            raise ValueError("MYSQL_URL не установлен (USE_DATABASE=true)")
 
 
 config = Config()
