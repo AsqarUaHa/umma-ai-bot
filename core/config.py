@@ -18,6 +18,8 @@ class Config:
     # Database (optional)
     MYSQL_URL: str = os.getenv("MYSQL_URL", "")
     USE_DATABASE: bool = os.getenv("USE_DATABASE", "false").lower() == "true"
+    DB_TYPE: str = os.getenv("DB_TYPE", "sqlite")  # sqlite или mysql
+    SQLITE_PATH: str = os.getenv("SQLITE_PATH", "data/umma_bot.db")
 
     # RAG
     MAX_HISTORY: int = int(os.getenv("MAX_HISTORY", "20"))
@@ -36,9 +38,12 @@ class Config:
             raise ValueError("BOT_TOKEN не установлен")
         if not self.OPENAI_API_KEY:
             raise ValueError("OPENAI_API_KEY не установлен")
-        # MySQL опционален
-        if self.USE_DATABASE and not self.MYSQL_URL:
-            raise ValueError("MYSQL_URL не установлен (USE_DATABASE=true)")
+        # Валидация БД
+        if self.USE_DATABASE:
+            if self.DB_TYPE == "mysql" and not self.MYSQL_URL:
+                raise ValueError("MYSQL_URL не установлен (DB_TYPE=mysql)")
+            elif self.DB_TYPE not in ["sqlite", "mysql"]:
+                raise ValueError("DB_TYPE должен быть 'sqlite' или 'mysql'")
 
 
 config = Config()

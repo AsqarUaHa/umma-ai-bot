@@ -19,8 +19,14 @@ async def main():
 
     # Инициализация БД (опционально)
     if config.USE_DATABASE:
-        await init_db()
-        logger.info("База данных инициализирована")
+        if config.DB_TYPE == "sqlite":
+            from database.sqlite_db import init_db
+            await init_db(config.SQLITE_PATH)
+            logger.info(f"SQLite база данных инициализирована: {config.SQLITE_PATH}")
+        else:
+            from database.db import init_db
+            await init_db()
+            logger.info("MySQL база данных инициализирована")
     else:
         logger.info("База данных отключена (USE_DATABASE=false)")
 

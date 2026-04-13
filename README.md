@@ -36,47 +36,66 @@ umma-ai-bot/
 └── requirements.txt
 ```
 
-## 🛠 Установка
+## 🛠 Установка и локальный запуск
+
+### Локальный запуск с SQLite
 
 ```bash
 cd umma-ai-bot
 pip install -r requirements.txt
 cp .env.example .env
-# Заполните .env
-python bot/main.py
 ```
 
-## 🌐 Деплой на Railway
+Отредактируйте `.env`:
+```env
+BOT_TOKEN=your_telegram_bot_token
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini
+EMBEDDING_MODEL=text-embedding-3-small
 
-### 1. Создайте MySQL сервис
+# Локальная SQLite база
+USE_DATABASE=true
+DB_TYPE=sqlite
+SQLITE_PATH=data/umma_bot.db
 
-1. Зайдите на [railway.app](https://railway.app)
-2. New Project → Add MySQL
-3. Скопируйте `MYSQL_URL` из переменных
+MAX_HISTORY=20
+```
 
-### 2. Создайте GitHub репозиторий
-
+Запустите бота:
 ```bash
-cd umma-ai-bot
-git init
-git add .
-git commit -m "Initial commit"
-gh repo create umma-ai-bot --public --source=. --push
+python main.py
 ```
 
-### 3. Подключите к Railway
+База данных SQLite будет автоматически создана в `data/umma_bot.db`.
 
-1. Railway → New → GitHub Repo
-2. Выберите `umma-ai-bot`
-3. Добавьте переменные окружения:
+## 🌐 Деплой на Render
+
+### 1. Создайте MySQL сервис на Render
+
+1. Зайдите на [render.com](https://render.com)
+2. New → PostgreSQL (или используйте внешний MySQL)
+3. Скопируйте connection string
+
+### 2. Создайте Web Service
+
+1. Render → New → Web Service
+2. Подключите GitHub репозиторий `umma-ai-bot`
+3. Настройки:
+   - **Environment**: Python 3
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `python main.py`
+
+4. Добавьте переменные окружения:
    - `BOT_TOKEN` - ваш Telegram bot token
    - `OPENAI_API_KEY` - ваш OpenAI API key
    - `OPENAI_MODEL` - gpt-4o-mini
    - `EMBEDDING_MODEL` - text-embedding-3-small
-   - `MYSQL_URL` - из MySQL сервиса
+   - `USE_DATABASE` - true
+   - `DB_TYPE` - mysql
+   - `MYSQL_URL` - ваш MySQL connection string
    - `MAX_HISTORY` - 20
 
-4. Deploy автоматически запустится
+5. Deploy автоматически запустится
 
 ## 📊 Как работает RAG
 
@@ -103,13 +122,31 @@ chunks + history → LLM → response (казахский)
 
 ## 🔧 Настройка
 
-`.env`:
+`.env` для локального запуска (SQLite):
 ```env
 BOT_TOKEN=your_bot_token
 OPENAI_API_KEY=your_openai_key
 OPENAI_MODEL=gpt-4o-mini
 EMBEDDING_MODEL=text-embedding-3-small
+
+USE_DATABASE=true
+DB_TYPE=sqlite
+SQLITE_PATH=data/umma_bot.db
+
+MAX_HISTORY=20
+```
+
+`.env` для продакшена (MySQL):
+```env
+BOT_TOKEN=your_bot_token
+OPENAI_API_KEY=your_openai_key
+OPENAI_MODEL=gpt-4o-mini
+EMBEDDING_MODEL=text-embedding-3-small
+
+USE_DATABASE=true
+DB_TYPE=mysql
 MYSQL_URL=mysql://user:pass@host:3306/db
+
 MAX_HISTORY=20
 ```
 
